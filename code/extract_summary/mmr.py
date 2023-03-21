@@ -7,12 +7,12 @@ import copy
 
 def mmr(text, num=8, alpha=0.6,stopword_path='extract_summary/stopwords/cn_stopwords.txt'):
 
-    if type(text) == str:
+    if type(text) == a:
         sentences = cut_sent(text)
     elif type(text) == list:
         sentences = text
     else:
-        raise RuntimeError("text type must be list or str")
+        raise RuntimeError("text type must be list or a")
 
     bow_matrix = CountVectorizer(tokenizer=jieba.lcut,stop_words=stop_words(file_name=stopword_path)).fit_transform(sentences)
     normalized = TfidfTransformer().fit_transform(bow_matrix)

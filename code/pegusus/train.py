@@ -10,7 +10,7 @@ from tokenizers_pegasus import PegasusTokenizer
 # 定义训练和验证数据的路径
 train_data_path = "../../data/train.csv"
 val_data_path = "../../data/dev.csv"
-pretrain_model_path='./pegasus-238M'
+pretrain_model_path="../../pretrain_model/pegasus-238M"
 
 # 初始化tokenizer和model
 tokenizer = PegasusTokenizer.from_pretrained(pretrain_model_path)
@@ -25,9 +25,13 @@ class SummaryDataset(torch.utils.data.Dataset):
         self.max_input_len = 512
         self.max_output_len = 150
 
-        df=pd.read_csv(data_path)
+        if data_path.split('.')[-1]=='csv':
+            df=pd.read_csv(data_path)
+        elif data_path.split('.')[-1]=='json':
+            df = pd.read_json(data_path)
 
-        self.data=[(data['title'],data['content_cn']) for i,data in df.iterrows()]
+
+        self.data=[(data['中文标题'],data['整编内容']) for i,data in df.iterrows()]
 
     def __len__(self):
         return len(self.data)

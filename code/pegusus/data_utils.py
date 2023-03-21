@@ -10,7 +10,7 @@ import random
 # from fengshen.examples.pegasus.pegasus_utils import text_segmentate
 import sys
 
-sys.path.append('../../')
+sys.path.append('../../../')
 
 rouge = rouge.Rouge()
 

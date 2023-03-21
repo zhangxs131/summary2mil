@@ -8,11 +8,11 @@ class PegasusPredictor(object):
         self.model = PegasusForConditionalGeneration.from_pretrained(pretrain_model)
         self.tokenizer = PegasusTokenizer.from_pretrained(pretrain_model)
 
-    def predict(self,text):
+    def predict(self,text,max_length):
         inputs = self.tokenizer(text, max_length=1024, return_tensors="pt", truncation=True)
 
         # Generate Summary
-        summary_ids = self.model.generate(inputs["input_ids"], max_length=80)
+        summary_ids = self.model.generate(inputs["input_ids"], max_length=max_length)
         t = self.tokenizer.batch_decode(summary_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
         return t
 

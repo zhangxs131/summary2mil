@@ -2,25 +2,48 @@ from transformers import BartTokenizer, BartForConditionalGeneration
 from transformers import Trainer, TrainingArguments
 from datasets import load_dataset
 from transformers import DataCollatorForSeq2Seq
+import torch
+import pandas as pd
 
-# 加载数据集
-dataset = load_dataset("csv", data_files={"train": "../../data/train.csv", "validation": "../../data/dev.csv"})
+train_data_path="../../data/dataset/train.json"
+val_data_path="../../data/dataset/validation.json"
+pretrain_model="../../pretrain_model/bart-base"
 
-# 初始化 tokenizer 和模型
-tokenizer = BartTokenizer.from_pretrained('./bart-base')
-model = BartForConditionalGeneration.from_pretrained('./bart-base')
+class SummaryDataset(torch.utils.data.Dataset):
+    def __init__(self, tokenizer, data_path):
+        self.tokenizer = tokenizer
+        self.data_path = data_path
+        self.max_input_len = 512
+        self.max_output_len = 150
 
-# 预处理数据集
-def preprocess_function(examples):
-    inputs = [doc for doc in examples['content_cn']]
-    targets = [summ for summ in examples['title']]
-    model_inputs = tokenizer(inputs, max_length=1024, truncation=True)
-    with tokenizer.as_target_tokenizer():
-        labels = tokenizer(targets, max_length=128, truncation=True)
-    model_inputs['labels'] = labels['input_ids']
-    return model_inputs
+        if data_path.split('.')[-1]=='csv':
+            df=pd.read_csv(data_path)
+        elif data_path.split('.')[-1]=='json':
+            df = pd.read_json(data_path)
 
-dataset = dataset.map(preprocess_function, batched=True)
+        self.data=[(data['中文标题'],data['整编内容']) for i,data in df.iterrows()]
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        line = self.data[idx]
+
+        input_ids = self.tokenizer.encode(line[1], max_length=self.max_input_len, truncation=True, padding='max_length',
+                                          return_tensors='pt')
+        output_ids = self.tokenizer.encode(line[0], max_length=self.max_output_len, truncation=True,
+                                           padding='max_length', return_tensors='pt')
+        return {'input_ids': input_ids.squeeze(), 'attention_mask': input_ids.squeeze().gt(0),
+                'decoder_input_ids': output_ids.squeeze()[:-1],
+                'decoder_attention_mask': output_ids.squeeze().gt(0)[:-1], 'labels': output_ids.squeeze()[1:]}
+
+tokenizer = BartTokenizer.from_pretrained(pretrain_model)
+model = BartForConditionalGeneration.from_pretrained(pretrain_model)
+
+# 初始化训练和验证数据集
+train_dataset = SummaryDataset(tokenizer, train_data_path)
+val_dataset = SummaryDataset(tokenizer, val_data_path)
+
 
 # 设置训练参数
 training_args = TrainingArguments(
@@ -44,8 +67,8 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=dataset['train'],
-    eval_dataset=dataset['validation'],
+    train_dataset=train_dataset,
+    eval_dataset=val_dataset,
     data_collator=DataCollatorForSeq2Seq(tokenizer, model=model),
     tokenizer=tokenizer
 )

@@ -7,43 +7,56 @@ from bart.predict import BartPredictor
 from pegusus.predict import PegasusPredictor
 
 
-def summary(text,bart_predictor=None,pegasus_predictor=None):
+def summary(text,title,bart_predictor=None,pegasus_predictor=None):
     #first sentence
+
+    result=[]
+    result.append('title :'+title)
 
     print('first sentence :')
     t=cut_sent(text)[0]
-    print(t)
+    print('first sentence :',t)
+    result.append('first sentence :'+t)
 
     print('textrank :')
     t=textRank(text,nums=1)
     print(t)
+    result.append('text rank :'+ t)
 
     print('mmr :')
     t=mmr(text,num=1)
     print(t)
+    result.append('mmr :'+ t)
 
     if bart_predictor != None:
         print('bart :')
         t = bart_predictor.predict(text)
         print(t)
+        result.append('bart :'+t)
 
     if pegasus_predictor != None:
         print('pegasus :')
         t = pegasus_predictor.predict(text)
         print(t)
+        result.append('pegasus :'+ t)
 
+    return  result
 
 
 def main():
     content_json=load_content_json("../data/train.csv")
 
-    bart_predictor=BartPredictor('bart/bart-base')
-    pegasus_predictor=PegasusPredictor('pegusus/pegasus-238M')
+    bart_predictor = BartPredictor('../pretrain_model/bart-base')
+    pegasus_predictor = PegasusPredictor('../pretrain_model/pegasus_238M')
 
-    for i in range(5):
-        summary(content_json["content_cn"][i],bart_predictor=bart_predictor,pegasus_predictor=pegasus_predictor)
-        print("the title is ")
-        print(content_json["title"][i])
+    nums=20
+
+    with open('result.txt','w',encoding='utf-8') as f:
+        for i in range(nums):
+            result=summary(content_json["content_cn"][i],content_json["title"][i],bart_predictor=bart_predictor,pegasus_predictor=pegasus_predictor)
+            for j in result:
+                f.write(j+'\n')
+            f.write('\n')
 
 if __name__=="__main__":
     main()

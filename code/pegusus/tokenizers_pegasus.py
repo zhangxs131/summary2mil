@@ -1,5 +1,5 @@
 
-from pegusus.data_utils import (
+from data_utils import (
     _is_control,
     _is_punctuation,
     _is_whitespace,
@@ -14,11 +14,11 @@ import re
 import jieba
 import sys
 
-sys.path.append("../../../")
+sys.path.append("../../../../")
 
-# jieba.dt.tmp_dir = os.path.expanduser(
-#     "/cognitive_comp/dongxiaoqun/software/jieba/tmp/")
-# # jieba.enable_parallel(8)
+jieba.dt.tmp_dir = os.path.expanduser(
+    "~/.cache/")
+# jieba.enable_parallel(8)
 jieba.initialize()
 
 logger = logging.get_logger(__name__)
