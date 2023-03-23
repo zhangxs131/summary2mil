@@ -7,7 +7,7 @@ import copy
 
 def mmr(text, num=8, alpha=0.6,stopword_path='extract_summary/stopwords/cn_stopwords.txt'):
 
-    if type(text) == a:
+    if type(text) == str:
         sentences = cut_sent(text)
     elif type(text) == list:
         sentences = text

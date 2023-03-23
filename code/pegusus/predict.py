@@ -8,7 +8,7 @@ class PegasusPredictor(object):
         self.model = PegasusForConditionalGeneration.from_pretrained(pretrain_model)
         self.tokenizer = PegasusTokenizer.from_pretrained(pretrain_model)
 
-    def predict(self,text,max_length):
+    def predict(self,text,max_length=80):
         inputs = self.tokenizer(text, max_length=1024, return_tensors="pt", truncation=True)
 
         # Generate Summary

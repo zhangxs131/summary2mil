@@ -30,13 +30,13 @@ def summary(text,title,bart_predictor=None,pegasus_predictor=None):
 
     if bart_predictor != None:
         print('bart :')
-        t = bart_predictor.predict(text)
+        t = bart_predictor.predict(text,max_length=20)
         print(t)
         result.append('bart :'+t)
 
     if pegasus_predictor != None:
         print('pegasus :')
-        t = pegasus_predictor.predict(text)
+        t = pegasus_predictor.predict(text,max_length=20)
         print(t)
         result.append('pegasus :'+ t)
 

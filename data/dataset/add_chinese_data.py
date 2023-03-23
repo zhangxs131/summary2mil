@@ -8,20 +8,21 @@ def trans_chinese(file_name,save_name):
     with open(file_name,'r',encoding='utf-8') as f:
         result=json.loads(f.read())
 
+    print(len(result))
 
-    result_list=[]
-    for id,i in tqdm(enumerate(result)):
-        # try:
-            translated=translationModelByYoudao(i['原文'])
-            result[id]['中文原文']=translated
-            print(translated)
-            result_list.append(result[id])
-        # except:
-        #     print('error_{}'.format(id))
-        #     continue
-
-    with open(save_name,'w',encoding='utf-8') as f:
-        f.write(json.dumps(result_list,ensure_ascii=False))
+    # result_list=[]
+    # for id,i in tqdm(enumerate(result)):
+    #     # try:
+    #         translated=translationModelByYoudao(i['原文'])
+    #         result[id]['中文原文']=translated
+    #         print(translated)
+    #         result_list.append(result[id])
+    #     # except:
+    #     #     print('error_{}'.format(id))
+    #     #     continue
+    #
+    # with open(save_name,'w',encoding='utf-8') as f:
+    #     f.write(json.dumps(result_list,ensure_ascii=False))
 
 def main():
     file_name='train.json'
