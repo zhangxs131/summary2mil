@@ -1,5 +1,5 @@
 
-from data_utils import (
+from code.pegusus.data_utils import (
     _is_control,
     _is_punctuation,
     _is_whitespace,

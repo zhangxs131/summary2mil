@@ -1,5 +1,7 @@
-from load_data import load_content_json
+import pandas as pd
 
+from load_data import load_content_json
+import json
 from bart.predict import BartPredictor
 from pegusus.predict import PegasusPredictor
 from rouge import Rouge
@@ -18,17 +20,20 @@ def eval_score(text,title,predictor=None):
 
     print(rouge_score)
 
+def load_file(data_path):
+    if data_path.split('.')[-1] == 'csv':
+        df = pd.read_csv(data_path)
+    elif data_path.split('.')[-1] == 'json':
+        df = pd.read_json(data_path)
 
-
-
+    return df['中文标题'].to_list(), df['整编内容'].to_list()
 
 def main():
-    content_json=load_content_json("../data/train.csv")
+    title_list,text_list=load_file("../data/dataset/validation.json")
 
     bart_predictor = BartPredictor('../pretrain_model/bart-base')
     pegasus_predictor = PegasusPredictor('../pretrain_model/pegasus_238M')
 
-    nums=20
     print('bart score')
     eval_score(text_list,title_list,bart_predictor)
 

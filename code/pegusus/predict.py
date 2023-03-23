@@ -1,5 +1,5 @@
 from transformers import PegasusForConditionalGeneration
-from pegusus.tokenizers_pegasus import PegasusTokenizer
+from code.pegusus.tokenizers_pegasus import PegasusTokenizer
 
 
 class PegasusPredictor(object):
