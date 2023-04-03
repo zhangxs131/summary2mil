@@ -66,15 +66,19 @@ def main():
     result={k:[] for k in cols}
     result['中文源标题']=[]
 
-    for id,data in tqdm(df.iterrows()):
-         if filter_en(data['源标题']):
-             for i in cols:
-                 result[i].append(data[i])
-             result['中文原文'][-1]=translate(data['原文'])
-             result['中文源标题']=translate(data['源标题'])
+    with open('../中文情报.csv', 'w', encoding='utf-8') as f:
+        for id,data in tqdm(df.iterrows()):
+             if filter_en(data['源标题']):
+                 for i in cols:
+                     result[i].append(data[i])
+                 result['中文原文'][-1]=translate(data['原文'])
+                 result['中文源标题'].append(translate(data['源标题']))
+                 print(result['源标题'][-1])
+                 print(result['中文源标题'][-1])
+                 f.write(json.dumps({k: result[k][-1] for k in result.keys()},ensure_ascii=False)+'\n')
 
-    df_result=pd.DataFrame(data=result)
-    df_result.to_csv('中文情报.csv',index=None)
+    # df_result=pd.DataFrame(data=result)
+    # df_result.to_csv('中文情报.csv',index=None)
 
 
 

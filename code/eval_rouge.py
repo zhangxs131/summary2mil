@@ -38,7 +38,7 @@ def load_file(data_path):
     return df['中文标题'].to_list(), df['整编内容'].to_list()
 
 def main():
-    title_list,text_list=load_file("../data/dataset/validation.json")
+    title_list,text_list=load_file("../data/test.csv")
 
     bart_predictor = BartPredictor('../pretrain_model/bart-base')
     pegasus_predictor = PegasusPredictor('../pretrain_model/pegasus_238M')
